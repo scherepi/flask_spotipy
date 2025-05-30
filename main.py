@@ -17,11 +17,15 @@ app.secret_key = "irea11yd0nTcar3"
 # Thanks to ruixdsgn for helping me understand how to implement the Spotify OAuth flow with the Spotipy module, as the docs are pretty confusing and bare regarding this topic.
 # I've done it before the dirty way with requests, but trying to use spotipy for the auth is new to me.
 
-HOST = gethostname()
+HOST = "127.0.0.1"
 scope = "playlist-modify-private"
-redirect_uri = f"https://{HOST}:3000/callback"
+redirect_uri = f"http://{HOST}:5000/callback"
 
-sp_oauth = SpotifyOAuth(app=app, client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri, scope=scope)
+sp_oauth = SpotifyOAuth(client_id=client_id, client_secret=client_secret, redirect_uri=redirect_uri, scope=scope)
+
+@app.route("/")
+def index():
+    return "<a href='/login'>log into Spotify</a>"
 
 @app.route("/login")
 def login():
@@ -45,4 +49,9 @@ def generate_playlist():
 
     user = sp.current_user()
     playlist = sp.user_playlist_create(user['id'], 'Test Playlist', public=False, description="This was made with Flask!")
-    playlist.
+    sp.playlist_add_items(playlist['id'], ["https://open.spotify.com/track/7o2AeQZzfCERsRmOM86EcB?si=7d6f3ab5c80f4004"])
+    return "Your playlist should've been created!"
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
